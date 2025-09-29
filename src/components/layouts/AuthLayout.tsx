@@ -1,7 +1,8 @@
 import { ReactNode, useState } from 'react'
 import { Sun, Moon } from 'lucide-react'
-// @ts-ignore
-import logoImg from '@/assets/logo.png'
+
+// URL da imagem na pasta public
+const logoImg = '/logo.png'
 
 // Componentes UI (Shadcn)
 import { Button } from '@/components/ui/button'

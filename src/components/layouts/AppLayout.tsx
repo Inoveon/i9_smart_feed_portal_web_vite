@@ -7,6 +7,7 @@ import {
   User,
   Settings,
   LogOut,
+  Monitor,
   FileText,
   BarChart3,
   Shield,
@@ -14,8 +15,9 @@ import {
   Moon,
   ChevronDown
 } from 'lucide-react'
-// @ts-ignore
-import logoImg from '@/assets/logo.png'
+
+// URL da imagem na pasta public
+const logoImg = '/logo.png'
 
 // Componentes UI (Shadcn)
 import { Button } from '@/components/ui/button'
