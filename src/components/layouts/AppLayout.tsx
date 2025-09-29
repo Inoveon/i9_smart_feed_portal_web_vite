@@ -223,32 +223,35 @@ export function AppLayout({ children }: AppLayoutProps) {
       {/* Main Content */}
       <div className="flex-1 flex flex-col overflow-hidden">
         {/* Header */}
-        <header className="bg-background border-b border-border px-4 lg:px-6 h-16 flex items-center gap-4">
-          {/* Mobile Menu Button */}
-          <Sheet open={isMobileMenuOpen} onOpenChange={setIsMobileMenuOpen}>
-            <SheetTrigger asChild>
-              <Button
-                variant="ghost"
-                size="icon"
-                className="lg:hidden"
-              >
-                <Menu className="h-5 w-5" />
-                <span className="sr-only">Abrir menu</span>
-              </Button>
-            </SheetTrigger>
-            <SheetContent side="left" className="w-64 p-0">
-              <Sidebar />
-            </SheetContent>
-          </Sheet>
+        <header className="bg-background border-b border-border px-4 lg:px-6 h-16 flex items-center justify-between">
+          {/* Left side - Mobile Menu + Search */}
+          <div className="flex items-center gap-4 flex-1">
+            {/* Mobile Menu Button */}
+            <Sheet open={isMobileMenuOpen} onOpenChange={setIsMobileMenuOpen}>
+              <SheetTrigger asChild>
+                <Button
+                  variant="ghost"
+                  size="icon"
+                  className="lg:hidden"
+                >
+                  <Menu className="h-5 w-5" />
+                  <span className="sr-only">Abrir menu</span>
+                </Button>
+              </SheetTrigger>
+              <SheetContent side="left" className="w-64 p-0">
+                <Sidebar />
+              </SheetContent>
+            </Sheet>
 
-          {/* Search */}
-          <div className="flex-1 max-w-md">
-            <div className="relative">
-              <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-muted-foreground" />
-              <Input
-                placeholder="Buscar campanhas, relatórios..."
-                className="pl-10"
-              />
+            {/* Search */}
+            <div className="max-w-2xl w-full lg:w-[50rem]">
+              <div className="relative">
+                <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-muted-foreground" />
+                <Input
+                  placeholder="Buscar campanhas, relatórios..."
+                  className="pl-10 w-full"
+                />
+              </div>
             </div>
           </div>
 
