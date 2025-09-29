@@ -14,12 +14,12 @@ const StationSchema = z.object({
   id: z.string(),
   code: z.string(),
   name: z.string(),
-  branch_id: z.string().optional(),
-  address: z.string().optional(),
+  branch_id: z.string().optional().nullable(),
+  address: z.string().optional().nullable(),
   is_active: z.boolean().optional(),
-  created_at: z.string().optional(),
-  updated_at: z.string().optional(),
-  branch: StationBranchSchema.optional(),
+  created_at: z.string().optional().nullable(),
+  updated_at: z.string().optional().nullable(),
+  branch: StationBranchSchema.optional().nullable(),
 })
 
 const StationsAvailableSchema = z.object({

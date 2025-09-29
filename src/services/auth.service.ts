@@ -22,6 +22,7 @@ class AuthService {
   private baseURL = ''
   private tokenKey = 'i9_smart_auth_token'
   private refreshTokenKey = 'i9_smart_refresh_token'
+  private credentialsKey = 'i9_smart_temp_creds'
   
   /**
    * Método auxiliar para fazer requisições
@@ -73,7 +74,7 @@ class AuthService {
    *   -H "Content-Type: application/x-www-form-urlencoded" \
    *   -d "username=admin&password=admin123"
    */
-  async login(credentials: LoginCredentials): Promise<LoginResponse> {
+  async login(credentials: LoginCredentials, remember: boolean = false): Promise<LoginResponse> {
     const validatedCredentials = LoginCredentialsSchema.parse(credentials)
     const formData = new URLSearchParams()
     formData.append('username', validatedCredentials.username)
@@ -87,6 +88,17 @@ class AuthService {
       })
       const loginResponse = LoginResponseSchema.parse(data)
       this.setTokens(loginResponse.access_token, loginResponse.refresh_token)
+      
+      // Se "remember" estiver ativo, salvar credenciais criptografadas
+      if (remember) {
+        const encoded = btoa(JSON.stringify({
+          u: validatedCredentials.username,
+          p: validatedCredentials.password,
+          t: Date.now()
+        }))
+        sessionStorage.setItem(this.credentialsKey, encoded)
+      }
+      
       return loginResponse
     } catch (error) {
       if (error instanceof Error) {
@@ -106,20 +118,57 @@ class AuthService {
   async refreshToken(): Promise<string> {
     const refreshToken = this.getRefreshToken()
     if (!refreshToken) {
+      // Tentar auto-login se tiver credenciais salvas
+      const autoLoginToken = await this.attemptAutoLogin()
+      if (autoLoginToken) return autoLoginToken
       throw new Error('Refresh token não encontrado')
     }
 
-    const requestData = RefreshTokenSchema.parse({ refresh_token: refreshToken })
+    try {
+      const requestData = RefreshTokenSchema.parse({ refresh_token: refreshToken })
+      
+      const response = await this.request<LoginResponse>('/api/auth/refresh', {
+        method: 'POST',
+        body: JSON.stringify(requestData),
+      })
+      
+      // Armazenar novo token
+      this.setTokens(response.access_token, response.refresh_token)
+      
+      return response.access_token
+    } catch (error) {
+      // Se refresh falhar, tentar auto-login
+      const autoLoginToken = await this.attemptAutoLogin()
+      if (autoLoginToken) return autoLoginToken
+      throw error
+    }
+  }
+  
+  /**
+   * Tentar fazer login automático com credenciais salvas
+   */
+  private async attemptAutoLogin(): Promise<string | null> {
+    const encodedCreds = sessionStorage.getItem(this.credentialsKey)
+    if (!encodedCreds) return null
     
-    const response = await this.request<LoginResponse>('/api/auth/refresh', {
-      method: 'POST',
-      body: JSON.stringify(requestData),
-    })
-    
-    // Armazenar novo token
-    this.setTokens(response.access_token, response.refresh_token)
-    
-    return response.access_token
+    try {
+      const decoded = JSON.parse(atob(encodedCreds))
+      // Verificar se não expirou (24 horas)
+      if (Date.now() - decoded.t > 24 * 60 * 60 * 1000) {
+        sessionStorage.removeItem(this.credentialsKey)
+        return null
+      }
+      
+      const loginResponse = await this.login({
+        username: decoded.u,
+        password: decoded.p
+      }, true)
+      
+      return loginResponse.access_token
+    } catch (error) {
+      sessionStorage.removeItem(this.credentialsKey)
+      return null
+    }
   }
 
   /**
@@ -141,8 +190,9 @@ class AuthService {
         })
       }
     } finally {
-      // Sempre limpar tokens localmente
+      // Sempre limpar tokens e credenciais localmente
       this.clearTokens()
+      sessionStorage.removeItem(this.credentialsKey)
     }
   }
 
@@ -368,7 +418,8 @@ export function useLogin() {
   const queryClient = useQueryClient()
   
   return useMutation({
-    mutationFn: authService.login.bind(authService),
+    mutationFn: ({ credentials, remember }: { credentials: LoginCredentials; remember?: boolean }) => 
+      authService.login(credentials, remember),
     onSuccess: (data) => {
       queryClient.invalidateQueries({ queryKey: ['auth'] })
       toast.success('Login realizado com sucesso!')

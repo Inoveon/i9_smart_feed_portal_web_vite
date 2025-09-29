@@ -475,7 +475,7 @@ export function useCreateCampaign() {
   const queryClient = useQueryClient()
   
   return useMutation({
-    mutationFn: campaignsService.create,
+    mutationFn: (data: CreateCampaignDTO) => campaignsService.create(data),
     onSuccess: (data) => {
       queryClient.invalidateQueries({ queryKey: ['campaigns'] })
       queryClient.invalidateQueries({ queryKey: ['metrics'] })
@@ -516,7 +516,7 @@ export function useDeleteCampaign() {
   const queryClient = useQueryClient()
   
   return useMutation({
-    mutationFn: campaignsService.delete,
+    mutationFn: (id: string) => campaignsService.delete(id),
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['campaigns'] })
       queryClient.invalidateQueries({ queryKey: ['metrics'] })

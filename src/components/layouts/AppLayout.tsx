@@ -123,6 +123,7 @@ export function AppLayout({ children }: AppLayoutProps) {
       current: false,
       roles: ['admin', 'editor', 'viewer'] as const
     },
+    /* TODO: Implementar módulo de relatórios
     {
       name: 'Relatórios',
       href: '/analytics',
@@ -130,6 +131,7 @@ export function AppLayout({ children }: AppLayoutProps) {
       current: false,
       roles: ['admin', 'editor'] as const
     },
+    */
     {
       name: 'Usuários',
       href: '/users',
@@ -190,7 +192,7 @@ export function AppLayout({ children }: AppLayoutProps) {
           </div>
           <div className="flex flex-col">
             <span className="text-sm font-semibold">i9 Smart</span>
-            <span className="text-xs text-muted-foreground">Campaigns</span>
+            <span className="text-xs text-muted-foreground">Feed</span>
           </div>
         </div>
       </div>

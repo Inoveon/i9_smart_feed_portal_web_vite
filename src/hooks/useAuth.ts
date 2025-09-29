@@ -144,12 +144,12 @@ export function useAuth() {
   /**
    * Realizar login
    */
-  const login = useCallback(async (credentials: LoginCredentials) => {
+  const login = useCallback(async (credentials: LoginCredentials, remember?: boolean) => {
     try {
       clearError()
       
       // Usar mutation do React Query para login
-      await loginMutation.mutateAsync(credentials)
+      await loginMutation.mutateAsync({ credentials, remember })
       
       // Verificar auth após login bem-sucedido
       await checkAuth()

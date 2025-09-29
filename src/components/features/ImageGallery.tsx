@@ -93,6 +93,17 @@ function SortableImageCard({ image, onDelete }: SortableImageCardProps) {
     return `${(ms / 1000).toFixed(1)}s`
   }
 
+  // Função para construir URL completa da imagem
+  const getImageUrl = (url: string) => {
+    // Se já for URL absoluta, retornar como está
+    if (url.startsWith('http://') || url.startsWith('https://')) {
+      return url
+    }
+    // Se for relativa, adicionar o domínio da API
+    const apiBase = import.meta.env.DEV ? 'http://localhost:8000' : ''
+    return `${apiBase}${url}`
+  }
+
   return (
     <Card ref={setNodeRef} style={style} className="relative group">
       <CardContent className="p-3">
@@ -112,7 +123,7 @@ function SortableImageCard({ image, onDelete }: SortableImageCardProps) {
           {(() => { const t = image.title ?? image.original_filename ?? 'Imagem da campanha';
           return (
           <img
-            src={image.url}
+            src={getImageUrl(image.url)}
             alt={t}
             className="w-full h-full object-cover"
           />) })()}
@@ -135,7 +146,7 @@ function SortableImageCard({ image, onDelete }: SortableImageCardProps) {
                   {(() => { const t = image.title ?? image.original_filename ?? 'Imagem da campanha';
                   return (
                   <img
-                    src={image.url}
+                    src={getImageUrl(image.url)}
                     alt={t}
                     className="w-full h-auto max-h-[70vh] object-contain rounded-lg"
                   />) })()}
@@ -173,10 +184,13 @@ function SortableImageCard({ image, onDelete }: SortableImageCardProps) {
           </h4>) })()}
           
           <div className="flex flex-wrap gap-1 text-xs">
+            {/* TODO: Remover ou tratar quando API retornar size_bytes corretamente */}
+            {/* Por enquanto comentado pois API retorna null para size_bytes
             <Badge variant="outline" className="flex items-center gap-1">
               <FileImage className="h-3 w-3" />
               {formatFileSize(image.size_bytes)}
             </Badge>
+            */}
             
             <Badge variant="outline" className="flex items-center gap-1">
               <Clock className="h-3 w-3" />

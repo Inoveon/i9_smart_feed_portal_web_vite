@@ -74,9 +74,9 @@ export function LoginPage() {
         localStorage.removeItem('i9_smart_remember_username')
       }
       
-      // Fazer login (remover campo remember antes de enviar)
+      // Fazer login passando flag de remember para auto-login
       const { remember, ...loginData } = data
-      await login(loginData)
+      await login(loginData, remember)
       
       // Verificar se o token foi salvo
       // token salvo verificado por hooks

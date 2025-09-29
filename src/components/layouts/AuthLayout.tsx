@@ -95,7 +95,7 @@ export function AuthLayout({
             </div>
             <div className="space-y-1">
               <h1 className="text-2xl font-bold text-foreground">
-                i9 Smart Campaigns
+                i9 Smart Feed
               </h1>
               <p className="text-sm text-muted-foreground">
                 Portal de Gerenciamento
