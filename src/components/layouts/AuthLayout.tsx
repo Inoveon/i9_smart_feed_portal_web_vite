@@ -1,5 +1,6 @@
 import { ReactNode, useState } from 'react'
 import { Sun, Moon } from 'lucide-react'
+// @ts-ignore
 import logoImg from '@/assets/logo.png'
 
 // Componentes UI (Shadcn)

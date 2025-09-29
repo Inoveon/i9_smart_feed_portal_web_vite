@@ -14,6 +14,7 @@ import {
   Moon,
   ChevronDown
 } from 'lucide-react'
+// @ts-ignore
 import logoImg from '@/assets/logo.png'
 
 // Componentes UI (Shadcn)
