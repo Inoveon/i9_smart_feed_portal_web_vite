@@ -142,15 +142,6 @@ export function ImageUploader({
         </CardTitle>
       </CardHeader>
       <CardContent className="space-y-4">
-        {/* Alerta de funcionalidade */}
-        <Alert>
-          <AlertCircle className="h-4 w-4" />
-          <AlertDescription>
-            <strong>Funcionalidade em desenvolvimento:</strong> O upload de imagens estará 
-            disponível em breve. Esta interface está pronta mas aguarda implementação no backend.
-          </AlertDescription>
-        </Alert>
-
         {/* Dropzone */}
         <div
           {...getRootProps()}

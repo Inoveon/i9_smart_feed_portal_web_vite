@@ -14,6 +14,7 @@ import { Badge } from '@/components/ui/badge'
 import { Link } from 'react-router-dom'
 import { Plus, Pencil, Trash2, Search, Image as ImageIcon } from 'lucide-react'
 import { toast } from 'sonner'
+import { translateCampaignStatus } from '@/lib/utils'
 
 export function CampaignsPage() {
   // Server-side pagination params
@@ -134,7 +135,7 @@ export function CampaignsPage() {
                         <td className="py-2 pr-4 max-w-xs truncate">{campaign.description || '-'}</td>
                         <td className="py-2 pr-4">
                           <Badge variant={getStatusBadgeVariant(campaign.status || 'active')}>
-                            {campaign.status || 'active'}
+                            {translateCampaignStatus(campaign.status || 'active')}
                           </Badge>
                         </td>
                         <td className="py-2 pr-4">{campaign.priority}</td>

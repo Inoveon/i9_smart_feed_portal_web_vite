@@ -24,6 +24,9 @@ import { ImageGallery } from '@/components/features/ImageGallery'
 // Service
 import { useCampaign } from '@/services/campaigns.service'
 
+// Utils
+import { translateCampaignStatus } from '@/lib/utils'
+
 export function CampaignImagesPage() {
   const { id } = useParams<{ id: string }>()
   const navigate = useNavigate()
@@ -116,7 +119,7 @@ export function CampaignImagesPage() {
           <div className="grid grid-cols-1 md:grid-cols-3 gap-4 text-sm">
             <div>
               <span className="font-medium text-muted-foreground">Status:</span>
-              <p className="capitalize">{campaign.status}</p>
+              <p className="capitalize">{translateCampaignStatus(campaign.status || '')}</p>
             </div>
             <div>
               <span className="font-medium text-muted-foreground">Tempo padrão:</span>
