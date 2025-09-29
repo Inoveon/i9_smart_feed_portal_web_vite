@@ -70,7 +70,7 @@ export function CampaignsPage() {
   return (
     <AppLayout>
       <ErrorBoundary>
-      <div className="container mx-auto p-6 space-y-6">
+      <div className="p-6 space-y-6">
         <PageHeader
           title="Campanhas"
           description="Gerencie suas campanhas de marketing digital"
@@ -124,7 +124,7 @@ export function CampaignsPage() {
                       <th className="py-2 pr-4">Status</th>
                       <th className="py-2 pr-4">Prioridade</th>
                       <th className="py-2 pr-4">Período</th>
-                      <th className="py-2 pr-4">Targeting</th>
+                      <th className="py-2 pr-4">Segmentação</th>
                       <th className="py-2 pr-4 text-right">Ações</th>
                     </tr>
                   </thead>

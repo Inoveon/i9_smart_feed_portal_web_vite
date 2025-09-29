@@ -53,7 +53,7 @@ export function BranchesPage() {
   return (
     <AppLayout>
       <ErrorBoundary>
-      <div className="container mx-auto p-6 space-y-6">
+      <div className="p-6 space-y-6">
         <PageHeader
           title="Filiais"
           description="Gerencie as filiais cadastradas no sistema"

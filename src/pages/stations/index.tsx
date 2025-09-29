@@ -76,7 +76,7 @@ export function StationsPage() {
   return (
     <AppLayout>
       <ErrorBoundary>
-      <div className="container mx-auto p-6 space-y-6">
+      <div className="p-6 space-y-6">
         <PageHeader
           title="Estações"
           description="Gerencie as estações cadastradas no sistema"

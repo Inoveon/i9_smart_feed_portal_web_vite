@@ -41,7 +41,7 @@ export function CampaignImagesPage() {
   if (isLoading) {
     return (
       <AppLayout>
-        <div className="container mx-auto p-6">
+        <div className="p-6">
           <div className="flex items-center gap-4 mb-6">
             <Button variant="ghost" size="sm" onClick={() => navigate(-1)}>
               <ArrowLeft className="h-4 w-4 mr-2" />
@@ -69,7 +69,7 @@ export function CampaignImagesPage() {
   if (error || !campaign) {
     return (
       <AppLayout>
-        <div className="container mx-auto p-6">
+        <div className="p-6">
           <div className="flex items-center gap-4 mb-6">
             <Button variant="ghost" size="sm" onClick={() => navigate(-1)}>
               <ArrowLeft className="h-4 w-4 mr-2" />
@@ -89,7 +89,7 @@ export function CampaignImagesPage() {
 
   return (
     <AppLayout>
-      <div className="container mx-auto p-6">
+      <div className="p-6">
         {/* Header */}
         <div className="flex items-center gap-4 mb-6">
           <Button variant="ghost" size="sm" onClick={() => navigate(-1)}>

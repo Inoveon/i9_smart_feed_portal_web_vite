@@ -138,7 +138,7 @@ export function CampaignForm() {
   if (isEditing && loadingCampaign) {
     return (
       <AppLayout>
-        <div className="container mx-auto p-6 space-y-6">
+        <div className="p-6 space-y-6">
           <div className="flex items-center gap-4">
             <Skeleton className="h-10 w-10" />
             <div className="space-y-2">
@@ -168,7 +168,7 @@ export function CampaignForm() {
 
   return (
     <AppLayout>
-      <div className="container mx-auto p-6 space-y-6">
+      <div className="p-6 space-y-6">
         {/* Header */}
         <div className="flex items-center gap-4">
           <Button 

@@ -70,7 +70,7 @@ export function StationFormPage() {
   if (isEditing && loadingStation) {
     return (
       <AppLayout>
-        <div className="container mx-auto p-6 space-y-6">
+        <div className="p-6 space-y-6">
           <Skeleton className="h-8 w-48" />
           <Card>
             <CardHeader>
@@ -89,7 +89,7 @@ export function StationFormPage() {
 
   return (
     <AppLayout>
-      <div className="container mx-auto p-6 space-y-6">
+      <div className="p-6 space-y-6">
         <div className="flex items-center gap-4">
           <Button variant="outline" size="icon" onClick={() => navigate('/stations')}>
             <ArrowLeft className="h-4 w-4" />
