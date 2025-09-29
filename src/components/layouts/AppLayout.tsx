@@ -7,7 +7,6 @@ import {
   User,
   Settings,
   LogOut,
-  Monitor,
   FileText,
   BarChart3,
   Shield,
@@ -15,6 +14,7 @@ import {
   Moon,
   ChevronDown
 } from 'lucide-react'
+import logoImg from '@/assets/logo.png'
 
 // Componentes UI (Shadcn)
 import { Button } from '@/components/ui/button'
@@ -187,9 +187,11 @@ export function AppLayout({ children }: AppLayoutProps) {
       {/* Logo/Brand */}
       <div className="flex items-center h-16 px-6 border-b border-border">
         <div className="flex items-center space-x-2">
-          <div className="w-8 h-8 bg-primary rounded-md flex items-center justify-center">
-            <Monitor className="w-4 h-4 text-primary-foreground" />
-          </div>
+          <img 
+            src={logoImg} 
+            alt="i9 Smart" 
+            className="w-8 h-8 object-contain"
+          />
           <div className="flex flex-col">
             <span className="text-sm font-semibold">i9 Smart</span>
             <span className="text-xs text-muted-foreground">Feed</span>

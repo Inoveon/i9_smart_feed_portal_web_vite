@@ -1,5 +1,6 @@
 import { ReactNode, useState } from 'react'
-import { Monitor, Sun, Moon } from 'lucide-react'
+import { Sun, Moon } from 'lucide-react'
+import logoImg from '@/assets/logo.png'
 
 // Componentes UI (Shadcn)
 import { Button } from '@/components/ui/button'
@@ -90,16 +91,20 @@ export function AuthLayout({
         <div className="mx-auto w-full max-w-md">
           {/* Logo/Brand */}
           <div className="text-center mb-8">
-            <div className="inline-flex items-center justify-center w-16 h-16 bg-primary rounded-xl shadow-lg mb-4">
-              <Monitor className="w-8 h-8 text-primary-foreground" />
-            </div>
-            <div className="space-y-1">
-              <h1 className="text-2xl font-bold text-foreground">
-                i9 Smart Feed
-              </h1>
-              <p className="text-sm text-muted-foreground">
-                Portal de Gerenciamento
-              </p>
+            <div className="flex flex-col items-center">
+              <img 
+                src={logoImg} 
+                alt="i9 Smart" 
+                className="w-16 h-16 object-contain mb-4"
+              />
+              <div className="space-y-1">
+                <h1 className="text-2xl font-bold text-foreground">
+                  i9 Smart Feed
+                </h1>
+                <p className="text-sm text-muted-foreground">
+                  Portal de Gerenciamento
+                </p>
+              </div>
             </div>
           </div>
 
