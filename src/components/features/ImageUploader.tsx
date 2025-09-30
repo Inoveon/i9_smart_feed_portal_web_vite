@@ -15,13 +15,13 @@
 import { useState, useCallback } from 'react'
 import { useDropzone, FileRejection } from 'react-dropzone'
 import { toast } from 'sonner'
-import { Upload, X, AlertCircle, Image as ImageIcon } from 'lucide-react'
+import { Upload, X, Image as ImageIcon } from 'lucide-react'
 
 // UI Components
 import { Button } from '@/components/ui/button'
 import { Progress } from '@/components/ui/progress'
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
-import { Alert, AlertDescription } from '@/components/ui/alert'
+// import { Alert, AlertDescription } from '@/components/ui/alert'
 import { Badge } from '@/components/ui/badge'
 
 // Service

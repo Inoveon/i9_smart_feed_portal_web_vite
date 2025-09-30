@@ -20,7 +20,7 @@ import { z } from 'zod'
 
 /**
  * PÁGINA DE LOGIN
- * 
+ *
  * Features:
  * - Formulário com validação via React Hook Form + Zod
  * - Integração com API real de autenticação
@@ -37,7 +37,7 @@ export function LoginPage() {
   // =============================================================================
   // REDIRECT SE JÁ ESTIVER AUTENTICADO
   // =============================================================================
-  
+
   useEffect(() => {
     if (isAuthenticated) {
       navigate('/dashboard')
@@ -66,21 +66,21 @@ export function LoginPage() {
   const onSubmit = async (data: LoginCredentials & { remember?: boolean }) => {
     try {
       clearError()
-      
+
       // Gerenciar "Lembrar-me"
       if (data.remember) {
         localStorage.setItem('i9_smart_remember_username', data.username)
       } else {
         localStorage.removeItem('i9_smart_remember_username')
       }
-      
+
       // Fazer login passando flag de remember para auto-login
       const { remember, ...loginData } = data
       await login(loginData, remember)
-      
+
       // Verificar se o token foi salvo
       // token salvo verificado por hooks
-      
+
       // Redirecionar para o dashboard após login bem-sucedido
       navigate('/dashboard')
     } catch (error) {
@@ -197,9 +197,9 @@ export function LoginPage() {
             />
 
             {/* Botão de Submit */}
-            <Button 
-              type="submit" 
-              className="w-full" 
+            <Button
+              type="submit"
+              className="w-full"
               disabled={isLoginLoading}
             >
               {isLoginLoading ? (
@@ -219,7 +219,7 @@ export function LoginPage() {
           <AuthNavLink href="/auth/forgot-password">
             Esqueci minha senha
           </AuthNavLink>
-          
+
           <div className="text-sm text-muted-foreground">
             Não tem uma conta?{' '}
             <AuthNavLink href="/auth/register" className="font-medium">
@@ -236,7 +236,7 @@ export function LoginPage() {
                 <p className="font-medium">🔑 Credenciais de teste (API Real):</p>
                 <div className="space-y-1">
                   <p>Usuário: <code className="bg-muted px-1 rounded">admin</code></p>
-                  <p>Senha: <code className="bg-muted px-1 rounded">admin123</code></p>
+                  <p>Senha: <code className="bg-muted px-1 rounded">Admin@123456</code></p>
                 </div>
                 <p className="text-xs text-muted-foreground mt-2">
                   API configurada ✅

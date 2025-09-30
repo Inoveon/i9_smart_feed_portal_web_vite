@@ -9,7 +9,6 @@ import {
   LogOut,
   Monitor,
   FileText,
-  BarChart3,
   Shield,
   Sun,
   Moon,

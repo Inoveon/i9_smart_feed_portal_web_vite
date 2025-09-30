@@ -12,10 +12,10 @@ build/
 # Environment files
 .env
 .env.local
-.env.production
 .env.development
+.env.homolog
+.env.production
 .env.*.local
-.env.deploy
 
 # IDE files
 .vscode/*

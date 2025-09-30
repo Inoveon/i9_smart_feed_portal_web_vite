@@ -19,7 +19,9 @@ const CampaignImagesPage = lazy(() => import('@/pages/campaigns/images/[id]').th
 const ProfilePage = lazy(() => import('@/pages/profile').then(m => ({ default: m.ProfilePage })))
 const AnalyticsPage = lazy(() => import('@/pages/analytics').then(m => ({ default: m.AnalyticsPage })))
 const ActivitiesPage = lazy(() => import('@/pages/activities'))
-const UsersPage = lazy(() => import('@/pages/users'))
+// Temporariamente sem lazy loading para debug
+import UsersPage from '@/pages/users'
+import UserFormPage from '@/pages/users/form'
 // Importar diretamente páginas de Filiais/Estações para evitar atrasos de lazy
 import BranchesPage from '@/pages/branches'
 import StationsPage from '@/pages/stations'
@@ -215,9 +217,23 @@ function AppRouter() {
         path="/users"
         element={
           <AuthGuard>
-            <Suspense fallback={<div className="p-6">Carregando...</div>}>
-              <UsersPage />
-            </Suspense>
+            <UsersPage />
+          </AuthGuard>
+        }
+      />
+      <Route
+        path="/users/new"
+        element={
+          <AuthGuard>
+            <UserFormPage />
+          </AuthGuard>
+        }
+      />
+      <Route
+        path="/users/:id/edit"
+        element={
+          <AuthGuard>
+            <UserFormPage />
           </AuthGuard>
         }
       />
@@ -249,12 +265,7 @@ function App() {
           <SessionTimeout />
           
           {/* Toast notifications */}
-          <Toaster 
-            position="top-right"
-            expand={true}
-            richColors
-            closeButton
-          />
+          <Toaster />
         </div>
       </BrowserRouter>
     </QueryClientProvider>

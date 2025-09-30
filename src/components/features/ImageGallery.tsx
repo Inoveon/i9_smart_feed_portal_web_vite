@@ -35,7 +35,6 @@ import {
   GripVertical, 
   Eye, 
   Clock, 
-  FileImage,
   AlertCircle,
   Image as ImageIcon
 } from 'lucide-react'
@@ -82,11 +81,11 @@ function SortableImageCard({ image, onDelete }: SortableImageCardProps) {
     opacity: isDragging ? 0.5 : 1,
   }
 
-  const formatFileSize = (bytes?: number | null) => {
-    if (!bytes) return 'N/A'
-    const MB = bytes / 1024 / 1024
-    return `${MB.toFixed(1)}MB`
-  }
+  // const formatFileSize = (bytes?: number | null) => {
+  //   if (!bytes) return 'N/A'
+  //   const MB = bytes / 1024 / 1024
+  //   return `${MB.toFixed(1)}MB`
+  // }
 
   const formatDisplayTime = (ms?: number | null) => {
     if (!ms) return 'Padrão'

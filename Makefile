@@ -215,84 +215,139 @@ docker-run: ## Executa container Docker
 
 # ==================== DEPLOY ====================
 
+.PHONY: deploy-all-info
+deploy-all-info: ## Mostra informações de todos os ambientes de deploy
+	@echo "$(GREEN)🌍 AMBIENTES DISPONÍVEIS$(NC)"
+	@echo ""
+	@echo "$(BLUE)📋 Comandos de Deploy:$(NC)"
+	@echo "   $(YELLOW)Desenvolvimento:$(NC) make deploy-development"
+	@echo "   $(YELLOW)Homologação:$(NC)    make deploy-homolog"
+	@echo "   $(YELLOW)Produção:$(NC)       make deploy-production"
+	@echo ""
+	@echo "$(BLUE)📊 Comandos de Status:$(NC)"
+	@echo "   $(YELLOW)Desenvolvimento:$(NC) make development-status"
+	@echo "   $(YELLOW)Homologação:$(NC)    make homolog-status"
+	@echo "   $(YELLOW)Produção:$(NC)       make production-status"
+	@echo ""
+	@echo "$(BLUE)📝 Ver configurações:$(NC) make deploy-info"
+
 .PHONY: setup-ssh
-setup-ssh: ## Configura autenticação SSH para deploy
-	@echo "$(GREEN)🔐 Configurando chave SSH...$(NC)"
-	@bash setup-ssh.sh
+setup-ssh: ## Configura chave SSH para todos os ambientes
+	@echo "$(GREEN)🔐 Configurando chave SSH para todos os ambientes...$(NC)"
+	@bash scripts/setup-ssh.sh all
+
+.PHONY: setup-ssh-homolog
+setup-ssh-homolog: ## Configura chave SSH apenas para homologação
+	@echo "$(GREEN)🔐 Configurando chave SSH para homologação...$(NC)"
+	@bash scripts/setup-ssh.sh homolog
+
+.PHONY: setup-ssh-production
+setup-ssh-production: ## Configura chave SSH apenas para produção
+	@echo "$(GREEN)🔐 Configurando chave SSH para produção...$(NC)"
+	@bash scripts/setup-ssh.sh production
+
+.PHONY: deploy-development
+deploy-development: ## Inicia servidor de desenvolvimento local
+	@bash scripts/deploy.sh development
+
+.PHONY: development-status
+development-status: ## Verifica status do desenvolvimento local
+	@echo "$(BLUE)📊 Status do Desenvolvimento:$(NC)"
+	@echo "$(YELLOW)Verificando portas...$(NC)"
+	@lsof -i :5173 > /dev/null 2>&1 && echo "   ✅ Frontend rodando na porta 5173" || echo "   ❌ Frontend não está rodando"
+	@lsof -i :8000 > /dev/null 2>&1 && echo "   ✅ API rodando na porta 8000" || echo "   ❌ API não está rodando"
+
+.PHONY: development-stop
+development-stop: ## Para o servidor de desenvolvimento
+	@echo "$(YELLOW)🛑 Parando servidor de desenvolvimento...$(NC)"
+	@pkill -f "vite" || echo "Servidor já estava parado"
+	@echo "$(GREEN)✅ Servidor de desenvolvimento parado$(NC)"
+
+.PHONY: development-restart
+development-restart: development-stop deploy-development ## Reinicia o servidor de desenvolvimento
 
 .PHONY: deploy-homolog
 deploy-homolog: ## Deploy para servidor de homologação
-	@if [ ! -f .env.deploy ]; then \
-		echo "$(YELLOW)⚠️  Configuração SSH não encontrada$(NC)"; \
-		echo "$(BLUE)Execute primeiro: make setup-ssh$(NC)"; \
-		exit 1; \
-	fi
-	@echo "$(GREEN)🚀 Deploy para homologação...$(NC)"
-	@bash deploy.sh homolog
+	@bash scripts/deploy.sh homolog
 
 .PHONY: deploy-production
-deploy-production: ## Deploy para servidor de produção
-	@if [ ! -f .env.deploy ]; then \
-		echo "$(YELLOW)⚠️  Configuração SSH não encontrada$(NC)"; \
-		echo "$(BLUE)Execute primeiro: make setup-ssh$(NC)"; \
-		exit 1; \
-	fi
-	@echo "$(GREEN)🚀 Deploy para produção...$(NC)"
-	@bash deploy.sh production
+deploy-production: ## Deploy para servidor de produção (172.16.2.90)
+	@bash scripts/deploy.sh production
 
-.PHONY: deploy-status
-deploy-status: ## Verifica status do deploy
-	@if [ -f .env.deploy ]; then \
-		source .env.deploy; \
-		echo "$(BLUE)📊 Status do deployment:$(NC)"; \
+.PHONY: deploy-production-quick
+deploy-production-quick: ## Deploy para produção sem confirmação
+	@echo "$(GREEN)🚀 Deploy direto para produção...$(NC)"
+	@SKIP_CONFIRM=1 bash scripts/deploy.sh production
+
+.PHONY: homolog-status
+homolog-status: ## Verifica status do deploy em homologação
+	@if [ -f .env.homolog ]; then \
+		source .env.homolog; \
+		echo "$(BLUE)📊 Status da Homologação:$(NC)"; \
 		ssh -i $$SSH_KEY $$SSH_USER@$$SSH_HOST "docker ps | grep i9-campaigns || echo 'Container não está rodando'"; \
 	else \
-		echo "$(YELLOW)⚠️  Configure SSH primeiro: make setup-ssh$(NC)"; \
+		echo "$(YELLOW)⚠️  Arquivo .env.homolog não encontrado$(NC)"; \
 	fi
 
-.PHONY: deploy-logs
-deploy-logs: ## Mostra logs do container em produção
-	@if [ -f .env.deploy ]; then \
-		source .env.deploy; \
-		echo "$(BLUE)📋 Logs do container:$(NC)"; \
+.PHONY: homolog-logs
+homolog-logs: ## Mostra logs do container em homologação
+	@if [ -f .env.homolog ]; then \
+		source .env.homolog; \
+		echo "$(BLUE)📋 Logs da Homologação:$(NC)"; \
 		ssh -i $$SSH_KEY $$SSH_USER@$$SSH_HOST "docker logs --tail 50 i9-campaigns-frontend"; \
 	else \
-		echo "$(YELLOW)⚠️  Configure SSH primeiro: make setup-ssh$(NC)"; \
+		echo "$(YELLOW)⚠️  Arquivo .env.homolog não encontrado$(NC)"; \
 	fi
 
-.PHONY: deploy-restart
-deploy-restart: ## Reinicia o container no servidor
-	@if [ -f .env.deploy ]; then \
-		source .env.deploy; \
-		echo "$(YELLOW)🔄 Reiniciando container...$(NC)"; \
+.PHONY: homolog-restart
+homolog-restart: ## Reinicia o container em homologação
+	@if [ -f .env.homolog ]; then \
+		source .env.homolog; \
+		echo "$(YELLOW)🔄 Reiniciando container em homologação...$(NC)"; \
 		ssh -i $$SSH_KEY $$SSH_USER@$$SSH_HOST "docker restart i9-campaigns-frontend"; \
 		echo "$(GREEN)✅ Container reiniciado!$(NC)"; \
 	else \
-		echo "$(YELLOW)⚠️  Configure SSH primeiro: make setup-ssh$(NC)"; \
-	fi
-
-.PHONY: deploy-ssh
-deploy-ssh: ## Conecta ao servidor via SSH
-	@if [ -f .env.deploy ]; then \
-		source .env.deploy; \
-		echo "$(BLUE)🔗 Conectando ao servidor...$(NC)"; \
-		ssh -i $$SSH_KEY $$SSH_USER@$$SSH_HOST; \
-	else \
-		echo "$(YELLOW)⚠️  Configure SSH primeiro: make setup-ssh$(NC)"; \
+		echo "$(YELLOW)⚠️  Arquivo .env.homolog não encontrado$(NC)"; \
 	fi
 
 .PHONY: deploy-info
-deploy-info: ## Mostra informações de deploy
-	@if [ -f .env.deploy ]; then \
-		source .env.deploy; \
-		echo "$(BLUE)📋 Configuração de Deploy:$(NC)"; \
-		echo "   $(YELLOW)Servidor:$(NC) $$SSH_HOST"; \
-		echo "   $(YELLOW)Usuário:$(NC) $$SSH_USER"; \
-		echo "   $(YELLOW)Chave SSH:$(NC) $$SSH_KEY"; \
-		echo "   $(YELLOW)Diretório:$(NC) /docker/i9-smart/campaigns"; \
-	else \
-		echo "$(YELLOW)⚠️  Configure SSH primeiro: make setup-ssh$(NC)"; \
+deploy-info: ## Mostra informações de todos os ambientes
+	@echo "$(BLUE)📋 Configurações de Deploy:$(NC)"; \
+	echo ""; \
+	if [ -f .env.homolog ]; then \
+		source .env.homolog; \
+		echo "$(YELLOW)HOMOLOGAÇÃO:$(NC)"; \
+		echo "   Servidor: $$SSH_HOST"; \
+		echo "   Usuário: $$SSH_USER"; \
+		echo "   Diretório: $$REMOTE_DIR"; \
+		echo ""; \
+	fi; \
+	if [ -f .env.production ]; then \
+		source .env.production; \
+		echo "$(YELLOW)PRODUÇÃO:$(NC)"; \
+		echo "   Servidor: $$SSH_HOST"; \
+		echo "   Usuário: $$SSH_USER"; \
+		echo "   Diretório: $$REMOTE_DIR"; \
 	fi
+
+.PHONY: production-status
+production-status: ## Verifica status do deploy em produção
+	@echo "$(BLUE)📊 Status da Produção (172.16.2.90):$(NC)"
+	@sshpass -p 'aldo$$2024' ssh -o StrictHostKeyChecking=no i9on@172.16.2.90 \
+		"sudo docker ps | grep feed-portal || echo '⚠️ Container não está rodando'"
+
+.PHONY: production-logs
+production-logs: ## Mostra logs do container em produção
+	@echo "$(BLUE)📋 Logs da Produção:$(NC)"
+	@sshpass -p 'aldo$$2024' ssh -o StrictHostKeyChecking=no i9on@172.16.2.90 \
+		"sudo docker logs --tail 50 i9-feed-portal-frontend"
+
+.PHONY: production-restart
+production-restart: ## Reinicia o container em produção
+	@echo "$(YELLOW)🔄 Reiniciando container em produção...$(NC)"
+	@sshpass -p 'aldo$$2024' ssh -o StrictHostKeyChecking=no i9on@172.16.2.90 \
+		"sudo docker restart i9-feed-portal-frontend"
+	@echo "$(GREEN)✅ Container reiniciado!$(NC)"
 
 # ==================== UTILIDADES ====================
 
