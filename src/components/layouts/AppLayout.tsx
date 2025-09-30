@@ -41,6 +41,9 @@ import { useAuth } from '@/hooks/useAuth'
 import { applyTheme, getSavedTheme, getSystemTheme, applyPalette, getSavedPalette, type ThemeMode, type ThemePalette } from '@/lib/theme'
 import { Link } from 'react-router-dom'
 
+// Components
+import { HelpDrawer } from '@/components/features/HelpDrawer'
+
 // Props do layout
 interface AppLayoutProps {
   children: ReactNode
@@ -275,6 +278,9 @@ export function AppLayout({ children }: AppLayoutProps) {
               <Bell className="h-4 w-4" />
               <span className="sr-only">Notificações</span>
             </Button>
+
+            {/* Help */}
+            <HelpDrawer />
 
             {/* User Menu */}
             <DropdownMenu>
