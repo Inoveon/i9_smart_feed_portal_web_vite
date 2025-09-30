@@ -111,12 +111,18 @@ fi
 # 3. Transferir arquivos
 echo -e "${YELLOW}📤 Transferindo arquivos para o servidor...${NC}"
 
-# Copiar nginx config apropriado
+# Copiar nginx config apropriado baseado no ambiente
 if [ "$ENV" = "production" ] && [ -f "nginx.production.conf" ]; then
+    echo -e "${BLUE}📋 Usando configuração nginx de produção${NC}"
     cp nginx.production.conf nginx.conf
+elif [ "$ENV" = "homolog" ] && [ -f "nginx.homolog.conf" ]; then
+    echo -e "${BLUE}📋 Usando configuração nginx de homologação${NC}"
+    cp nginx.homolog.conf nginx.conf
+elif [ "$ENV" = "development" ] && [ -f "nginx.development.conf" ]; then
+    echo -e "${BLUE}📋 Usando configuração nginx de desenvolvimento${NC}"
+    cp nginx.development.conf nginx.conf
 else
-    # Usar nginx.conf padrão para homolog
-    true
+    echo -e "${YELLOW}⚠️ Usando nginx.conf padrão${NC}"
 fi
 
 scp_copy dist Dockerfile nginx.conf docker-compose.yml .dockerignore

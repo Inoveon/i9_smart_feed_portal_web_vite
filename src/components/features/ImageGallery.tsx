@@ -99,7 +99,8 @@ function SortableImageCard({ image, onDelete }: SortableImageCardProps) {
       return url
     }
     // Se for relativa, adicionar o domínio da API
-    const apiBase = import.meta.env.DEV ? 'http://localhost:8000' : ''
+    // Em produção, o nginx faz proxy mas precisamos da URL completa para imagens
+    const apiBase = import.meta.env.DEV ? 'http://localhost:8000' : 'http://172.16.2.90:8000'
     return `${apiBase}${url}`
   }
 
