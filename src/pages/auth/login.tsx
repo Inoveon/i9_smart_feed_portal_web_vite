@@ -229,7 +229,7 @@ export function LoginPage() {
         </div>
 
         {/* Credenciais de teste (apenas em desenvolvimento) */}
-        {true && (
+        {import.meta.env.DEV && (
           <div className="mt-6">
             <AuthAlert type="info">
               <div className="space-y-2">

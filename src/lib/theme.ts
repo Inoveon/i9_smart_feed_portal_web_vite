@@ -44,7 +44,7 @@ export function applyPalette(palette: ThemePalette) {
 export function initThemeAndPalette() {
   // Theme
   const savedTheme = getSavedTheme()
-  applyTheme(savedTheme ?? getSystemTheme())
+  applyTheme(savedTheme ?? 'light')  // Sempre usa light como padrão
   // Palette
   const savedPalette = getSavedPalette()
   if (savedPalette) applyPalette(savedPalette)
