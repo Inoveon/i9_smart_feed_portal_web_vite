@@ -451,6 +451,8 @@ export function useLogout() {
     onSuccess: () => {
       queryClient.clear() // Limpar todos os dados em cache
       toast.success('Logout realizado com sucesso!')
+      // Redirecionar para login
+      window.location.href = '/auth/login'
     },
     onError: (error) => {
       toast.error(`Erro no logout: ${error.message}`)

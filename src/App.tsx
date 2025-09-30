@@ -3,6 +3,7 @@ import { initThemeAndPalette } from '@/lib/theme'
 import { BrowserRouter, Routes, Route, Navigate } from 'react-router-dom'
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query'
 import { Toaster } from 'sonner'
+import { authManager } from '@/lib/auth-manager'
 
 // Guards
 import { AuthGuard } from '@/components/guards/AuthGuard'
@@ -252,6 +253,14 @@ function App() {
   // Inicializar tema + paleta persistidos
   useEffect(() => {
     initThemeAndPalette()
+    
+    // Iniciar gerenciador de autenticação
+    authManager.start()
+    
+    // Limpar ao desmontar
+    return () => {
+      authManager.stop()
+    }
   }, [])
 
   return (

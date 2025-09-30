@@ -90,6 +90,9 @@ export const useAuthStore = create<AuthStore>()(
             isLoading: false,
             error: null
           })
+          
+          // Redirecionar para login após logout
+          window.location.href = '/auth/login'
         } catch (error) {
           // Mesmo com erro, limpar estado local
           set({
@@ -98,6 +101,9 @@ export const useAuthStore = create<AuthStore>()(
             isLoading: false,
             error: null
           })
+          
+          // Redirecionar mesmo com erro
+          window.location.href = '/auth/login'
         }
       },
 

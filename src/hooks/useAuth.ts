@@ -96,6 +96,11 @@ export function useAuth() {
 
     // Verificar inatividade a cada minuto
     const inactivityCheck = setInterval(async () => {
+      // Se não está mais autenticado, parar de verificar
+      if (!useAuthStore.getState().isAuthenticated) {
+        return
+      }
+      
       const inactiveTime = Date.now() - lastActivity
       const fiveMinutes = 5 * 60 * 1000
 
