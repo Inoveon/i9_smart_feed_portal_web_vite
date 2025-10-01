@@ -20,8 +20,8 @@ export function TargetingSelector({ value, onChange }: {
   value: TargetingValue
   onChange: (next: TargetingValue) => void
 }) {
-  const { data: regionsData } = useBranchRegions()
-  const { data: available } = useStationsAvailable()
+  const { data: regionsData, isLoading: regionsLoading } = useBranchRegions()
+  const { data: available, isLoading: stationsLoading } = useStationsAvailable()
   const [regionFilter, setRegionFilter] = useState<string>('')
   const [branchFilter, setBranchFilter] = useState<string>('')
 
@@ -37,6 +37,10 @@ export function TargetingSelector({ value, onChange }: {
 
   const stationsByBranch = useMemo(() => available?.branches || {}, [available])
 
+  // Verifica se está carregando dados essenciais
+  const isLoading = regionsLoading || stationsLoading
+  const hasNoData = !regionsData || !available
+
   const handleModeChange = (mode: TargetingMode) => {
     if (mode === 'global') {
       onChange({ mode, regions: [], branches: [], stations: [] })
@@ -46,30 +50,50 @@ export function TargetingSelector({ value, onChange }: {
   }
 
   const toggleArrayItem = (arr: string[], item: string) => arr.includes(item) ? arr.filter(i => i !== item) : [...arr, item]
-
+  
   return (
     <Card>
       <CardHeader>
         <CardTitle>Alcance (Targeting)</CardTitle>
       </CardHeader>
       <CardContent className="space-y-4">
+        {/* Mensagem de carregamento ou erro */}
+        {isLoading && (
+          <div className="text-sm text-muted-foreground">
+            Carregando dados de regiões e filiais...
+          </div>
+        )}
+        
+        {!isLoading && hasNoData && (
+          <div className="text-sm text-destructive">
+            Erro ao carregar dados de targeting. Verifique a conexão com a API.
+          </div>
+        )}
+        
         {/* Modo de Targeting */}
         <div className="grid grid-cols-2 md:grid-cols-4 gap-2">
           {([
-            { key: 'global', label: 'Global' },
-            { key: 'regions', label: 'Regiões' },
-            { key: 'branches', label: 'Filiais' },
-            { key: 'stations', label: 'Estações' },
-          ] as { key: TargetingMode; label: string }[]).map(opt => (
-            <label key={opt.key} className={`border rounded-md p-2 cursor-pointer ${value.mode === opt.key ? 'border-primary' : 'border-border'}`}>
+            { key: 'global', label: 'Global', disabled: false },
+            { key: 'regions', label: 'Regiões', disabled: hasNoData || allRegions.length === 0 },
+            { key: 'branches', label: 'Filiais', disabled: hasNoData || !available?.branches },
+            { key: 'stations', label: 'Estações', disabled: hasNoData || !available?.branches },
+          ] as { key: TargetingMode; label: string; disabled: boolean }[]).map(opt => (
+            <label 
+              key={opt.key} 
+              className={`border rounded-md p-2 ${opt.disabled ? 'opacity-50 cursor-not-allowed' : 'cursor-pointer'} ${value.mode === opt.key ? 'border-primary' : 'border-border'}`}
+            >
               <div className="flex items-center gap-2">
                 <input
                   type="radio"
                   name="targeting-mode"
                   checked={value.mode === opt.key}
-                  onChange={() => handleModeChange(opt.key)}
+                  onChange={() => !opt.disabled && handleModeChange(opt.key)}
+                  disabled={opt.disabled}
                 />
                 <span>{opt.label}</span>
+                {opt.disabled && opt.key !== 'global' && (
+                  <span className="text-xs text-muted-foreground ml-1">(sem dados)</span>
+                )}
               </div>
             </label>
           ))}

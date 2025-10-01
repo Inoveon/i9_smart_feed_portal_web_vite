@@ -99,8 +99,8 @@ export function CampaignForm() {
           ? new Date(campaign.end_date).toISOString().split('T')[0] 
           : '',
         default_display_time: campaign.default_display_time,
-        regions: (campaign as any).regions || [],
-        branches: (campaign as any).branches || [],
+        regions: campaign.regions || [],
+        branches: campaign.branches || [],
         stations: campaign.stations || [],
         priority: campaign.priority,
       }
@@ -374,6 +374,7 @@ export function CampaignForm() {
                     stations: form.watch('stations'),
                   } as TargetingValue}
                   onChange={(next) => {
+                    console.log('TargetingSelector onChange:', next)
                     if (next.mode === 'global') {
                       form.setValue('regions', [])
                       form.setValue('branches', [])
@@ -384,6 +385,7 @@ export function CampaignForm() {
                       form.setValue('stations', next.stations)
                     }
                   }}
+                  disabled={isSubmitting}
                 />
 
                 {/* Buttons */}
