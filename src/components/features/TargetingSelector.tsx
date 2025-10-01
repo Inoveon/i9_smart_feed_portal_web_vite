@@ -1,4 +1,4 @@
-import { useMemo, useState } from 'react'
+import { useMemo, useState, useEffect } from 'react'
 import { useBranchRegions } from '@/services/branches.service'
 import { useStationsAvailable } from '@/services/stations.service'
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
@@ -16,14 +16,25 @@ export interface TargetingValue {
   stations: string[]
 }
 
-export function TargetingSelector({ value, onChange }: {
+export function TargetingSelector({ value, onChange, disabled }: {
   value: TargetingValue
-  onChange: (next: TargetingValue) => void
+  onChange: (value: TargetingValue) => void
+  disabled?: boolean
 }) {
-  const { data: regionsData, isLoading: regionsLoading } = useBranchRegions()
-  const { data: available, isLoading: stationsLoading } = useStationsAvailable()
+  const { data: regionsData, isLoading: regionsLoading, error: regionsError } = useBranchRegions()
+  const { data: available, isLoading: stationsLoading, error: stationsError } = useStationsAvailable()
   const [regionFilter, setRegionFilter] = useState<string>('')
   const [branchFilter, setBranchFilter] = useState<string>('')
+
+  // Logs de debug apenas para erros
+  useEffect(() => {
+    if (regionsError) {
+      console.error('Erro ao carregar regiões:', regionsError)
+    }
+    if (stationsError) {
+      console.error('Erro ao carregar estações:', stationsError)
+    }
+  }, [regionsError, stationsError])
 
   const allRegions = regionsData?.regions || []
 
@@ -39,7 +50,7 @@ export function TargetingSelector({ value, onChange }: {
 
   // Verifica se está carregando dados essenciais
   const isLoading = regionsLoading || stationsLoading
-  const hasNoData = !regionsData || !available
+  const hasNoData = !regionsData && !available
 
   const handleModeChange = (mode: TargetingMode) => {
     if (mode === 'global') {
@@ -70,6 +81,7 @@ export function TargetingSelector({ value, onChange }: {
           </div>
         )}
         
+        
         {/* Modo de Targeting */}
         <div className="grid grid-cols-2 md:grid-cols-4 gap-2">
           {([
@@ -88,7 +100,7 @@ export function TargetingSelector({ value, onChange }: {
                   name="targeting-mode"
                   checked={value.mode === opt.key}
                   onChange={() => !opt.disabled && handleModeChange(opt.key)}
-                  disabled={opt.disabled}
+                  disabled={disabled || opt.disabled}
                 />
                 <span>{opt.label}</span>
                 {opt.disabled && opt.key !== 'global' && (
@@ -117,15 +129,19 @@ export function TargetingSelector({ value, onChange }: {
           <div className="space-y-2">
             <div className="text-sm text-muted-foreground">Selecione uma ou mais regiões</div>
             <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-5 gap-2">
-              {allRegions.map(r => (
-                <label key={r} className="flex items-center gap-2 border rounded-md p-2">
-                  <Checkbox
-                    checked={value.regions.includes(r)}
-                    onCheckedChange={() => onChange({ ...value, regions: toggleArrayItem(value.regions, r), branches: [], stations: [] })}
-                  />
-                  <span>{r}</span>
-                </label>
-              ))}
+              {allRegions.length === 0 ? (
+                <div className="text-sm text-muted-foreground col-span-full">Nenhuma região disponível</div>
+              ) : (
+                allRegions.map(r => (
+                  <label key={r} className="flex items-center gap-2 border rounded-md p-2 cursor-pointer hover:bg-accent">
+                    <Checkbox
+                      checked={value.regions.includes(r)}
+                      onCheckedChange={() => onChange({ ...value, regions: toggleArrayItem(value.regions, r), branches: [], stations: [] })}
+                    />
+                    <span>{r}</span>
+                  </label>
+                ))
+              )}
             </div>
           </div>
         )}
@@ -150,15 +166,19 @@ export function TargetingSelector({ value, onChange }: {
               </div>
             </div>
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-2 max-h-72 overflow-auto pr-1">
-              {branchEntries.map(b => (
-                <label key={b.code} className="flex items-center gap-2 border rounded-md p-2">
-                  <Checkbox
-                    checked={value.branches.includes(b.code)}
-                    onCheckedChange={() => onChange({ ...value, branches: toggleArrayItem(value.branches, b.code), regions: [], stations: [] })}
-                  />
-                  <span>{b.name} ({b.code})</span>
-                </label>
-              ))}
+              {branchEntries.length === 0 ? (
+                <div className="text-sm text-muted-foreground col-span-full">Nenhuma filial disponível</div>
+              ) : (
+                branchEntries.map(b => (
+                  <label key={b.code} className="flex items-center gap-2 border rounded-md p-2 cursor-pointer hover:bg-accent">
+                    <Checkbox
+                      checked={value.branches.includes(b.code)}
+                      onCheckedChange={() => onChange({ ...value, branches: toggleArrayItem(value.branches, b.code), regions: [], stations: [] })}
+                    />
+                    <span className="text-sm">{b.name} ({b.code})</span>
+                  </label>
+                ))
+              )}
             </div>
           </div>
         )}
@@ -189,7 +209,7 @@ export function TargetingSelector({ value, onChange }: {
                   <div key={code} className="border rounded-md">
                     <div className="px-3 py-2 text-sm font-medium bg-muted">{stationsByBranch[code].name} ({code})</div>
                     <div className="p-2 space-y-1">
-                      {stationsByBranch[code].stations.map(s => (
+                      {stationsByBranch[code].stations.map((s: { code: string; name: string }) => (
                         <label key={`${code}:${s.code}`} className="flex items-center gap-2 p-1 rounded">
                           <Checkbox
                             checked={value.stations.includes(s.code)}

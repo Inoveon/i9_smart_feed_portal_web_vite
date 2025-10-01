@@ -5,7 +5,7 @@
  * Baseado nos campos confirmados nos testes de endpoints
  */
 
-import { useEffect } from 'react'
+import { useEffect, useState } from 'react'
 import { useForm } from 'react-hook-form'
 import { zodResolver } from '@hookform/resolvers/zod'
 import { z } from 'zod'
@@ -31,7 +31,7 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/com
 import { Form, FormControl, FormDescription, FormField, FormItem, FormLabel, FormMessage } from '@/components/ui/form'
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select'
 import { Skeleton } from '@/components/ui/skeleton'
-import { TargetingSelector, TargetingValue } from '@/components/features/TargetingSelector'
+import { TargetingSelector, TargetingValue, TargetingMode } from '@/components/features/TargetingSelector'
 
 // Schema baseado APENAS em campos confirmados da API
 const campaignFormSchema = z.object({
@@ -66,6 +66,9 @@ export function CampaignForm() {
   const { data: campaign, isLoading: loadingCampaign } = useCampaign(id || '')
   const createMutation = useCreateCampaign()
   const updateMutation = useUpdateCampaign()
+  
+  // Estado para controlar o modo de targeting explicitamente
+  const [targetingMode, setTargetingMode] = useState<TargetingMode>('global')
 
   // Form setup
   const form = useForm<CampaignFormData>({
@@ -106,6 +109,17 @@ export function CampaignForm() {
       }
 
       form.reset(formData)
+      
+      // Determinar o modo de targeting baseado nos dados carregados
+      if (campaign.stations && campaign.stations.length > 0) {
+        setTargetingMode('stations')
+      } else if (campaign.branches && campaign.branches.length > 0) {
+        setTargetingMode('branches')
+      } else if (campaign.regions && campaign.regions.length > 0) {
+        setTargetingMode('regions')
+      } else {
+        setTargetingMode('global')
+      }
     }
   }, [campaign, isEditing, form])
 
@@ -366,15 +380,15 @@ export function CampaignForm() {
                 {/* Targeting */}
                 <TargetingSelector
                   value={{
-                    mode: (form.watch('regions').length || form.watch('branches').length || form.watch('stations').length)
-                      ? (form.watch('stations').length ? 'stations' : (form.watch('branches').length ? 'branches' : 'regions'))
-                      : 'global',
+                    mode: targetingMode,
                     regions: form.watch('regions'),
                     branches: form.watch('branches'),
                     stations: form.watch('stations'),
                   } as TargetingValue}
                   onChange={(next) => {
                     console.log('TargetingSelector onChange:', next)
+                    setTargetingMode(next.mode)
+                    
                     if (next.mode === 'global') {
                       form.setValue('regions', [])
                       form.setValue('branches', [])

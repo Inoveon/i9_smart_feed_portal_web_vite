@@ -65,6 +65,8 @@ class StationsService {
     const timeoutId = setTimeout(() => controller.abort(), 30000)
     try {
       const token = localStorage.getItem('i9_smart_auth_token')
+      console.log(`[StationsService] Requisição para ${endpoint}, token presente: ${!!token}`)
+      
       const res = await fetch(`${this.baseURL}/api${endpoint}`, {
         ...options,
         signal: controller.signal,
@@ -74,12 +76,17 @@ class StationsService {
           ...options.headers,
         },
       })
+      
+      console.log(`[StationsService] Resposta de ${endpoint}: ${res.status}`)
+      
       if (!res.ok) {
         const err = await res.json().catch(() => ({ message: `HTTP ${res.status}` }))
+        console.error(`[StationsService] Erro em ${endpoint}:`, err)
         throw new Error(err.detail || err.message || `HTTP ${res.status}`)
       }
       return res.json()
     } catch (e: any) {
+      console.error(`[StationsService] Erro na requisição ${endpoint}:`, e)
       if (e?.name === 'AbortError') throw new Error('Timeout ao comunicar com a API')
       throw e
     } finally {
